@@ -1,0 +1,198 @@
+# BJJ Gym Finder — London
+
+A small, real-data app that finds Brazilian Jiu Jitsu gyms near a
+London postcode. Built in one day as a portfolio piece to demonstrate
+Python and data-handling skills for a data analysis role — not a
+finished product, a deliberately scoped-down proof of concept.
+
+## Why it's scoped this way
+
+The original idea was bigger: a ClassPass-style app covering six
+combat sports across all of London, with AI-powered search over gym
+reviews ("find me a gym that's good for nervous beginners"). That's
+too much for a day and, more importantly, too much to be able to
+defend in detail if someone asks "why did you do it this way?" for
+every part of it.
+
+So it's cut down on three axes:
+
+- **One sport, one city** — BJJ, London. Enough real data to be
+  interesting, small enough to fully understand and QA by hand.
+- **Keyword matching, not NLP** — see [Design decisions](#design-decisions)
+  below. This was actually cut further mid-build (see
+  [Known limitations](#known-limitations--what-i-cut)).
+- **A working small thing beats a half-built ambitious thing.** The
+  full vision is the "what I'd build next" answer in an interview,
+  not something half-implemented here.
+
+## The pipeline
+
+```
+fetch_gyms.py  -->  gyms_raw.json  -->  process_data.py  -->  gyms_clean.csv  -->  app.py
+ (Google Places      (raw API          (pandas cleaning       (Streamlit,
+  API, New)            responses)       + tagging)              serves the data)
+```
+
+1. **`fetch_gyms.py`** — Two-step fetch against Places API (New):
+   - **Text Search** with 7 query variations (different phrasing plus
+     London area terms like "BJJ gym North London") to get broad
+     coverage, since a single query misses gyms that don't match its
+     exact wording. Paginates through Google's 60-result cap per
+     query.
+   - **Place Details**, one call per unique place, to get fields Text
+     Search doesn't return (phone number, website).
+   - The two-step split is deliberate: Place Details is billed per
+     call, so it's wasteful to fetch full details for every result of
+     every query before deduplicating. Text Search first, dedupe by
+     place ID, then Details only for the gyms that survive.
+   - Output: `gyms_raw.json`, the raw API responses, one object per
+     gym.
+
+2. **`process_data.py`** — Loads the raw JSON, flattens it into a
+   table with pandas, and computes a `highly_rated` flag (rating and
+   review-count threshold — see below). Drops any gym missing
+   lat/lng (can't be placed on a map or have a distance computed).
+   Output: `gyms_clean.csv`.
+
+3. **`app.py`** — Streamlit app. Takes a postcode, geocodes it via
+   the free [postcodes.io](https://postcodes.io) API, computes
+   distance to every gym with the haversine formula, and displays
+   results filtered by radius and sorted by distance or rating.
+
+## Design decisions
+
+**Field masks control cost, not just payload size.** Places API (New)
+bills by which fields you request — the field mask isn't just "what
+JSON keys do I get back", it's "what SKU tier am I paying for".
+`fetch_gyms.py`'s field masks only ask for what the app actually
+uses, on purpose.
+
+**Two-step search-then-details.** Covered above — avoids paying for
+Place Details on gyms that get filtered out anyway.
+
+**Keyword matching over NLP (the original plan).** The idea was to
+tag gyms with themes like `beginner_friendly` or `great_instructors`
+by matching keywords against review text — simple, fully explainable,
+and honest about what it can't do (see limitations below). This is
+why field masks and the two-step design still read as if reviews
+were part of the plan: they were, until testing showed the data
+wasn't accessible. Keeping that reasoning here rather than editing
+it away is deliberate — it's a more honest record of how the project
+actually went.
+
+**Rating + review count over rating alone (the fallback that shipped
+instead).** Once keyword theme tagging was cut, the natural
+replacement was "just use the star rating" — but the actual data
+made that useless on its own: all 58 gyms in this dataset are rated
+4.3 or higher. People who stick with a combat sport for years
+mostly only bother reviewing gyms they already like, so rating alone
+barely discriminates. Review *count* is what actually separates "3
+people loved this" from "200 people loved this", so `highly_rated`
+requires both a rating threshold (≥4.7) and a minimum review count
+(≥20) — see `process_data.py` for the exact logic and reasoning in
+comments.
+
+## Known limitations — what I cut, and why
+
+**Review-based keyword tagging was cut entirely.** The plan was
+straightforward: pull each gym's reviews via Place Details, then tag
+gyms with themes (`beginner_friendly`, `clean_facility`, etc.) by
+keyword matching against the review text — a simple, explainable
+stand-in for full NLP sentiment analysis.
+
+It didn't ship, because the data wasn't there to tag. I requested
+Google's `reviews` field in the Place Details field mask and got back
+nothing — not an error, not an empty array, the field was just absent
+from the response for every one of the 58 gyms. I investigated this
+properly rather than assuming it was a quick fix:
+
+- Confirmed it wasn't a field mask syntax issue: same empty result
+  with a wildcard (`*`) mask requesting every field, and with
+  explicit sub-field paths (`reviews.text`, `reviews.rating`, etc).
+- Confirmed it wasn't a language/region filter: explicit
+  `languageCode=en&regionCode=GB` params made no difference.
+- Cross-referenced Google's own field-tier documentation: `reviews`
+  sits in a distinct, higher SKU tier ("Place Details Enterprise +
+  Atmosphere") than the fields that *did* come through fine
+  (`rating`, `phone`, `website`, all "Enterprise" tier) — a clean,
+  consistent pattern, not a random gap.
+- Ruled out the obvious project-level causes: API key restrictions,
+  quotas, and billing account status all checked out clean, and there
+  was no matching Google status incident.
+- Tried `reviewSummary` (Google's separate AI-generated review
+  summary field) as a fallback text source — same result, empty.
+
+At that point, with a one-day budget, continuing to debug an
+account-level API quirk stopped being a good use of time. Rather than
+ship a "themes" feature that silently tags nothing, or fake review
+text to make a demo look better than the real pipeline produces, I
+cut it and shipped the `highly_rated` flag instead — a smaller
+feature, but one built on data that's actually real. **This is a
+deliberate scope decision, not an oversight** — I'd rather defend
+"I cut this and here's the evidence why" than have to defend a
+feature that doesn't actually work.
+
+**Keyword matching can't detect negation, in general.** Even had the
+reviews data been accessible, this approach has a known limitation
+worth stating plainly: a review saying *"not beginner friendly"*
+would still match the `beginner_friendly` theme, because keyword
+matching has no concept of sentence structure — it just checks
+whether a substring appears anywhere in the text. Full NLP (or even
+basic negation-window detection) would catch this; a one-day keyword
+approach doesn't try to. That's an honest trade-off of the simple
+approach, not a bug to quietly work around.
+
+**`highly_rated` is a coarse signal.** With 48 of 58 gyms meeting the
+threshold, it doesn't discriminate as sharply as a more nuanced
+metric could (e.g. weighting recency of reviews, or Bayesian
+rating). It's good enough to be a useful filter, not good enough to
+be a ranking algorithm.
+
+**No caching/rate-limit handling beyond a fixed sleep.** `fetch_gyms.py`
+uses a flat `time.sleep(0.2)` between Details calls rather than
+adaptive backoff. Fine for a one-off 58-gym pull; wouldn't scale to a
+larger dataset run repeatedly.
+
+## Running it locally
+
+```bash
+pip install -r requirements.txt
+```
+
+Create a `.env` file with your Google Places API key:
+
+```
+GOOGLE_PLACES_API_KEY=your_key_here
+```
+
+Then run the pipeline (or skip straight to the app — `gyms_clean.csv`
+is already checked in):
+
+```bash
+python fetch_gyms.py      # -> gyms_raw.json (costs API calls)
+python process_data.py    # -> gyms_clean.csv
+streamlit run app.py
+```
+
+## What I'd build next
+
+If this became the full multi-sport version:
+
+- **Real review text.** Either resolve the Places API access issue
+  (this may just need Google support, or a different billing setup)
+  or bring in a second review data source, then revisit NLP-based
+  theme extraction — done properly this time, with negation handling
+  and a real evaluation set rather than a keyword list.
+- **More sports, more cities** — the pipeline already treats
+  "sport + city" as parameters via `SEARCH_QUERIES`; scaling it out
+  is mostly a matter of query design and cost management, not a
+  rewrite.
+- **A map view**, not just a list — the lat/lng data is already
+  there.
+- **Caching geocoding results** and the gym dataset behind a proper
+  data store instead of a CSV, once it's not just one sport in one
+  city.
+- **Tests** — none exist yet; for a one-day scope, manual verification
+  (shown in the build process, not just claimed) stood in for a test
+  suite, but a real version would need one, especially around the
+  distance/filtering logic.
