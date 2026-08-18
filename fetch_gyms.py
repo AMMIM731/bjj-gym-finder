@@ -2,17 +2,23 @@
 fetch_gyms.py
 
 Pulls BJJ gyms in London from the Google Places API (New) and saves
-the raw results — including up to 5 reviews per gym — to gyms_raw.json.
+the raw results to gyms_raw.json.
+
+The field mask originally included "reviews" too, but Google's API
+returns that field empty for every place regardless of field mask
+syntax, sub-fields, or wildcard requests — confirmed by direct
+testing (see README.md). It's dropped from the mask below since
+requesting it buys nothing but a higher pricing tier.
 
 Two-step process:
   1. Text Search: cheap call that returns a list of matching places
      with basic fields (name, address, location, rating).
   2. Place Details: one call per place to get the extra fields we
-     actually want to analyse, in this case the review text.
+     actually want (phone, website, precise review count).
 
-We split it this way deliberately — pulling reviews for every
+We split it this way deliberately — pulling Place Details for every
 result up front would be wasteful if a search query returns places
-we don't care about.
+we don't care about, since Details is billed per call.
 
 Run with: python fetch_gyms.py
 """
@@ -50,7 +56,7 @@ SEARCH_FIELD_MASK = (
 )
 DETAILS_FIELD_MASK = (
     "id,displayName,formattedAddress,location,rating,"
-    "userRatingCount,websiteUri,internationalPhoneNumber,reviews"
+    "userRatingCount,websiteUri,internationalPhoneNumber"
 )
 
 
@@ -83,7 +89,7 @@ def search_places(query: str) -> list[dict]:
 
 
 def get_place_details(place_id: str) -> dict:
-    """Fetch full details (including reviews) for one place."""
+    """Fetch full details for one place."""
     headers = {
         "X-Goog-Api-Key": API_KEY,
         "X-Goog-FieldMask": DETAILS_FIELD_MASK,
