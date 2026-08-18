@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+fetch_progress.json
+fetch_run.log

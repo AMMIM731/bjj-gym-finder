@@ -1,9 +1,11 @@
-# BJJ Gym Finder — London
+# BJJ Gym Finder — Europe
 
 A small, real-data app that finds Brazilian Jiu Jitsu gyms near a
-London postcode. Built in one day as a portfolio piece to demonstrate
-Python and data-handling skills for a data analysis role — not a
-finished product, a deliberately scoped-down proof of concept.
+postcode, city, or address in the UK, France, Germany, Spain, or
+Italy. Started as a one-day portfolio piece covering just London, to
+demonstrate Python and data-handling skills for a data analysis
+role — not a finished product, a deliberately scoped-down proof of
+concept that was later expanded to five countries.
 
 ## Why it's scoped this way
 
@@ -16,8 +18,11 @@ every part of it.
 
 So it's cut down on three axes:
 
-- **One sport, one city** — BJJ, London. Enough real data to be
-  interesting, small enough to fully understand and QA by hand.
+- **One sport, a population-thresholded set of cities** — BJJ only,
+  and only cities of 50,000+ people across five countries (see
+  `build_city_list.py`), not literally every town. Enough real data
+  to be interesting, without paying for and QA-ing thousands of
+  villages that almost certainly have zero BJJ gyms.
 - **Keyword matching, not NLP** — see [Design decisions](#design-decisions)
   below. This was actually cut further mid-build (see
   [Known limitations](#known-limitations--what-i-cut)).
@@ -28,25 +33,40 @@ So it's cut down on three axes:
 ## The pipeline
 
 ```
-fetch_gyms.py  -->  gyms_raw.json  -->  process_data.py  -->  gyms_clean.csv  -->  app.py
- (Google Places      (raw API          (pandas cleaning       (Streamlit,
-  API, New)            responses)       + tagging)              serves the data)
+build_city_list.py --> cities.csv --> fetch_gyms.py --> gyms_raw.json --> process_data.py --> gyms_clean.csv --> app.py
+ (GeoNames filtered      (city, country,   (Google Places      (raw API          (pandas cleaning      (Streamlit,
+  by population)          lat/lng list)     API, New)            responses)       + tagging)              serves the data)
 ```
 
-1. **`fetch_gyms.py`** — Two-step fetch against Places API (New):
-   - **Text Search** with 7 query variations (different phrasing plus
-     London area terms like "BJJ gym North London") to get broad
-     coverage, since a single query misses gyms that don't match its
-     exact wording. Paginates through Google's 60-result cap per
+0. **`build_city_list.py`** — Downloads GeoNames' free "cities15000"
+   dataset (every city worldwide with population > 15,000) and
+   filters it to the UK, France, Germany, Spain, and Italy, at a
+   50,000+ population threshold. This is what defines the search
+   scope — swap the country codes or threshold at the top of the
+   script to cover a different set of countries or city sizes.
+   Output: `cities.csv` (~988 cities at the current settings).
+
+1. **`fetch_gyms.py`** — Two-step fetch against Places API (New), run
+   once per city in `cities.csv`:
+   - **Text Search**, one query per city (`"Brazilian Jiu Jitsu gym in
+     {city}, {country}"`). One query per city — rather than the several
+     phrasings the original London-only version used — keeps ~1,000
+     cities affordable. Paginates through Google's 60-result cap per
      query.
-   - **Place Details**, one call per unique place, to get fields Text
-     Search doesn't return (phone number, website).
+   - **Place Details**, one call per unique place *not already found
+     by an earlier city* (neighbouring cities' searches overlap
+     sometimes), to get fields Text Search doesn't return (phone
+     number, website).
    - The two-step split is deliberate: Place Details is billed per
      call, so it's wasteful to fetch full details for every result of
      every query before deduplicating. Text Search first, dedupe by
      place ID, then Details only for the gyms that survive.
+   - Progress checkpoints to `fetch_progress.json` after every city,
+     so an interrupted run (network blip, rate limit) can be resumed
+     with the same command instead of re-paying for cities already
+     done.
    - Output: `gyms_raw.json`, the raw API responses, one object per
-     gym.
+     gym, tagged with the city/country that found it.
 
 2. **`process_data.py`** — Loads the raw JSON, flattens it into a
    table with pandas, and computes a `highly_rated` flag (rating and
@@ -54,10 +74,14 @@ fetch_gyms.py  -->  gyms_raw.json  -->  process_data.py  -->  gyms_clean.csv  --
    lat/lng (can't be placed on a map or have a distance computed).
    Output: `gyms_clean.csv`.
 
-3. **`app.py`** — Streamlit app. Takes a postcode, geocodes it via
-   the free [postcodes.io](https://postcodes.io) API, computes
-   distance to every gym with the haversine formula, and displays
-   results filtered by radius and sorted by distance or rating.
+3. **`app.py`** — Streamlit app. Takes a postcode, city, or address,
+   geocodes it via the free [Nominatim](https://nominatim.openstreetmap.org)
+   (OpenStreetMap) API, computes distance to every gym with the
+   haversine formula, and displays results filtered by radius and
+   sorted by distance or rating. Nominatim replaced the original
+   [postcodes.io](https://postcodes.io) integration, which only
+   understands UK postcodes and couldn't geocode the other four
+   countries.
 
 ## Design decisions
 
@@ -83,14 +107,24 @@ actually went.
 **Rating + review count over rating alone (the fallback that shipped
 instead).** Once keyword theme tagging was cut, the natural
 replacement was "just use the star rating" — but the actual data
-made that useless on its own: all 58 gyms in this dataset are rated
-4.3 or higher. People who stick with a combat sport for years
-mostly only bother reviewing gyms they already like, so rating alone
-barely discriminates. Review *count* is what actually separates "3
-people loved this" from "200 people loved this", so `highly_rated`
-requires both a rating threshold (≥4.7) and a minimum review count
-(≥20) — see `process_data.py` for the exact logic and reasoning in
-comments.
+made that useless on its own: in the original 58-gym London-only
+dataset, every single gym was rated 4.3 or higher. People who stick
+with a combat sport for years mostly only bother reviewing gyms they
+already like, so rating alone barely discriminates. Review *count*
+is what actually separates "3 people loved this" from "200 people
+loved this", so `highly_rated` requires both a rating threshold
+(≥4.7) and a minimum review count (≥20) — see `process_data.py` for
+the exact logic and reasoning in comments.
+
+**Population-thresholded city list over an exhaustive one.**
+Expanding past London raised an obvious question: search every town
+in five countries, or just the ones likely to have a BJJ gym at all?
+Literally "every city" would mean thousands of Places API calls for
+places that probably have zero results — BJJ gyms concentrate in
+urban areas. `build_city_list.py` filters GeoNames' city data to a
+50,000+ population threshold instead, which cuts the search space to
+~1,000 cities while still catching the overwhelming majority of
+gyms.
 
 ## Known limitations — what I cut, and why
 
@@ -142,16 +176,18 @@ basic negation-window detection) would catch this; a one-day keyword
 approach doesn't try to. That's an honest trade-off of the simple
 approach, not a bug to quietly work around.
 
-**`highly_rated` is a coarse signal.** With 48 of 58 gyms meeting the
-threshold, it doesn't discriminate as sharply as a more nuanced
-metric could (e.g. weighting recency of reviews, or Bayesian
-rating). It's good enough to be a useful filter, not good enough to
-be a ranking algorithm.
+**`highly_rated` is a coarse signal.** In the original 58-gym London
+dataset, 48 gyms met the threshold — it doesn't discriminate as
+sharply as a more nuanced metric could (e.g. weighting recency of
+reviews, or Bayesian rating). It's good enough to be a useful filter,
+not good enough to be a ranking algorithm.
 
-**No caching/rate-limit handling beyond a fixed sleep.** `fetch_gyms.py`
-uses a flat `time.sleep(0.2)` between Details calls rather than
-adaptive backoff. Fine for a one-off 58-gym pull; wouldn't scale to a
-larger dataset run repeatedly.
+**No adaptive rate-limit handling.** `fetch_gyms.py` uses a flat
+`time.sleep(0.2)` between Details calls rather than adaptive backoff
+on 429s. Per-city checkpointing (see the pipeline section above)
+covers the "run got interrupted" failure mode; it doesn't cover
+"Google is actively rate-limiting us" — that would need real backoff
+logic if it becomes a problem at this scale.
 
 ## Running it locally
 
@@ -169,10 +205,19 @@ Then run the pipeline (or skip straight to the app — `gyms_clean.csv`
 is already checked in):
 
 ```bash
-python fetch_gyms.py      # -> gyms_raw.json (costs API calls)
-python process_data.py    # -> gyms_clean.csv
+python build_city_list.py  # -> cities.csv (free, no API key needed)
+python fetch_gyms.py       # -> gyms_raw.json (costs API calls — see below)
+python process_data.py     # -> gyms_clean.csv
 streamlit run app.py
 ```
+
+**`fetch_gyms.py` at the current ~988-city scope makes a lot of
+billed Google Places calls** — roughly 1,000 Text Search requests
+plus one Place Details call per unique gym found (likely several
+thousand). Check your Google Cloud budget/quota alerts before
+running it fresh. It checkpoints after every city (`fetch_progress.json`),
+so it's safe to interrupt and resume — re-running the same command
+picks up where it left off instead of re-paying for finished cities.
 
 ## What I'd build next
 
@@ -183,10 +228,14 @@ If this became the full multi-sport version:
   or bring in a second review data source, then revisit NLP-based
   theme extraction — done properly this time, with negation handling
   and a real evaluation set rather than a keyword list.
-- **More sports, more cities** — the pipeline already treats
-  "sport + city" as parameters via `SEARCH_QUERIES`; scaling it out
-  is mostly a matter of query design and cost management, not a
-  rewrite.
+- **More sports** — the city-search pipeline already generalises;
+  adding a sport is mostly a matter of changing the query template in
+  `fetch_gyms.py`, not a rewrite.
+- **Smaller towns, or more countries** — lower the population
+  threshold or add country codes in `build_city_list.py`. Worth
+  weighing against cost: dropping to a 20,000+ threshold roughly
+  doubles the city count (and the API bill) for a long tail of towns
+  unlikely to have a gym.
 - **A map view**, not just a list — the lat/lng data is already
   there.
 - **Caching geocoding results** and the gym dataset behind a proper

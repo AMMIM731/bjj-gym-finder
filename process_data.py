@@ -49,6 +49,8 @@ def clean_gym(gym: dict) -> dict:
     return {
         "name": gym.get("displayName", {}).get("text", "Unknown"),
         "address": gym.get("formattedAddress", ""),
+        "city": gym.get("source_city", ""),
+        "country": gym.get("source_country", ""),
         "lat": location.get("latitude"),
         "lng": location.get("longitude"),
         "rating": rating,

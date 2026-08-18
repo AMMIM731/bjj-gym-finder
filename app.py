@@ -1,14 +1,21 @@
 """
 app.py
 
-Streamlit app: enter a London postcode, find nearby BJJ gyms sorted
-by distance or rating.
+Streamlit app: enter a postcode, city, or address anywhere in the
+UK, France, Germany, Spain, or Italy, and find nearby BJJ gyms
+sorted by distance or rating.
 
 Originally the plan was a free-text box ("what are you looking
 for?") matched against keyword-tagged review themes. That's cut —
 see README.md and process_data.py for why. This version filters and
 sorts on rating and review count instead, which is real data we
 actually have.
+
+Geocoding originally used postcodes.io, which only understands UK
+postcodes. Now that gyms span five countries, we use Nominatim
+(OpenStreetMap's free geocoder) instead — it has no API key, but its
+usage policy caps public server use at ~1 request/second and
+requires a descriptive User-Agent, both handled below.
 
 Run with: streamlit run app.py
 """
@@ -20,7 +27,12 @@ import pandas as pd
 import requests
 import streamlit as st
 
-POSTCODES_IO_URL = "https://api.postcodes.io/postcodes/{postcode}"
+NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
+
+# Nominatim's usage policy requires a descriptive User-Agent
+# identifying the application — anonymous/default requests get
+# blocked. See https://operations.osmfoundation.org/policies/nominatim/
+NOMINATIM_HEADERS = {"User-Agent": "bjj-gym-finder (Streamlit demo app)"}
 
 # Resolve gyms_clean.csv relative to this file, not the process's
 # working directory — Streamlit can be launched from a different cwd
@@ -28,10 +40,11 @@ POSTCODES_IO_URL = "https://api.postcodes.io/postcodes/{postcode}"
 # bare relative path would silently break in those cases.
 DATA_PATH = Path(__file__).parent / "gyms_clean.csv"
 
-# How far to search by default. London is big enough that showing
-# all 58 gyms sorted by distance would bury genuinely nearby ones
-# under a long scroll of gyms 20km away — a radius cutoff is what
-# makes "find a gym near me" actually useful.
+# How far to search by default. With gyms spread across five
+# countries, showing every result sorted by distance would bury
+# genuinely nearby ones under a long scroll of gyms in other
+# cities — a radius cutoff is what makes "find a gym near me"
+# actually useful.
 DEFAULT_RADIUS_KM = 15
 
 
@@ -40,27 +53,29 @@ def load_gyms(path: Path = DATA_PATH) -> pd.DataFrame:
     return pd.read_csv(path)
 
 
-def geocode_postcode(postcode: str) -> tuple[float, float] | None:
-    """Look up a UK postcode's lat/lng via postcodes.io.
+def geocode_location(query: str) -> tuple[float, float] | None:
+    """Look up a postcode, city, or address's lat/lng via Nominatim.
 
-    Returns None for anything that isn't a valid, recognised postcode
-    rather than raising — the caller decides how to show that to the
-    user. postcodes.io is free and needs no API key, which is why we
-    used it instead of another Google Geocoding call.
+    Returns None for anything that doesn't resolve rather than
+    raising — the caller decides how to show that to the user.
     """
-    url = POSTCODES_IO_URL.format(postcode=postcode.strip())
+    params = {"q": query.strip(), "format": "json", "limit": 1}
     try:
-        response = requests.get(url, timeout=5)
+        response = requests.get(
+            NOMINATIM_URL, params=params, headers=NOMINATIM_HEADERS, timeout=5
+        )
     except requests.RequestException:
         return None
 
     if response.status_code != 200:
-        # postcodes.io returns 404 for a well-formed but unrecognised
-        # postcode, and 400 for garbage input — both mean "no result".
         return None
 
-    result = response.json().get("result", {})
-    return result.get("latitude"), result.get("longitude")
+    results = response.json()
+    if not results:
+        return None
+
+    match = results[0]
+    return float(match["lat"]), float(match["lon"])
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -119,15 +134,19 @@ def render_gym(row: pd.Series) -> None:
 
 
 def main():
-    st.set_page_config(page_title="BJJ Gym Finder — London", page_icon="🥋")
-    st.title("🥋 BJJ Gym Finder — London")
+    st.set_page_config(page_title="BJJ Gym Finder — Europe", page_icon="🥋")
+    st.title("🥋 BJJ Gym Finder — Europe")
     st.caption(
-        "Real gym data from Google Places API (New), one postcode search away."
+        "Real gym data from Google Places API (New), covering the UK, France, "
+        "Germany, Spain, and Italy — one search away."
     )
 
     gyms = load_gyms()
 
-    postcode = st.text_input("Your postcode", placeholder="e.g. E1 6AN")
+    location_query = st.text_input(
+        "Your postcode, city, or address",
+        placeholder="e.g. E1 6AN, Berlin, or Via Roma 1, Milan",
+    )
 
     col1, col2 = st.columns(2)
     with col1:
@@ -140,15 +159,15 @@ def main():
         f"(rating ≥ 4.7 with 20+ reviews)"
     )
 
-    if not postcode:
-        st.info("Enter a postcode to see BJJ gyms near you.")
+    if not location_query:
+        st.info("Enter a postcode, city, or address to see BJJ gyms near you.")
         return
 
-    location = geocode_postcode(postcode)
+    location = geocode_location(location_query)
     if location is None or location[0] is None:
         st.error(
-            f"Couldn't find the postcode \"{postcode}\". "
-            "Double check it's a real UK postcode (e.g. E1 6AN)."
+            f"Couldn't find \"{location_query}\". "
+            "Try a more specific postcode, city, or address."
         )
         return
 
@@ -166,7 +185,7 @@ def main():
 
     if results.empty:
         st.warning(
-            f"No gyms found within {radius_km} km of \"{postcode}\". "
+            f"No gyms found within {radius_km} km of \"{location_query}\". "
             "Try widening the search radius or clearing the "
             "highly-rated filter."
         )
