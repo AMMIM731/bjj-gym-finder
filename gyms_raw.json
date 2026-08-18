@@ -1,0 +1,921 @@
+[
+  {
+    "id": "ChIJK3-6_UkOdkgRr362kim8EMk",
+    "internationalPhoneNumber": "+44 20 8743 9336",
+    "formattedAddress": "89 Richford St, London W6 7HJ, UK",
+    "location": {
+      "latitude": 51.499373,
+      "longitude": -0.2265348
+    },
+    "rating": 4.7,
+    "websiteUri": "http://www.bjjlondon.com/",
+    "userRatingCount": 134,
+    "displayName": {
+      "text": "Carlson Gracie London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJv9Fw4xcQdkgRX9NDfvyow8o",
+    "internationalPhoneNumber": "+44 20 8741 0231",
+    "formattedAddress": "Ground Floor, Glen House, 22-24 Glenthorne Rd, London W6 0NG, UK",
+    "location": {
+      "latitude": 51.494640399999994,
+      "longitude": -0.2267265
+    },
+    "rating": 4.8,
+    "websiteUri": "http://rogergracie.com/",
+    "userRatingCount": 179,
+    "displayName": {
+      "text": "Roger Gracie Brazilian Jiu Jitsu Academy HQ",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJPSSfN0QPdkgRECqDmCkaBBU",
+    "internationalPhoneNumber": "+44 7902 491656",
+    "formattedAddress": "Aspenlea Rd, London W6 8LH, UK",
+    "location": {
+      "latitude": 51.485603399999995,
+      "longitude": -0.21977359999999999
+    },
+    "rating": 4.9,
+    "websiteUri": "https://cantagalobjj.com/",
+    "userRatingCount": 109,
+    "displayName": {
+      "text": "Cantagalo JiuJitsu London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ8eIFxzkOdkgRJVMnErxpP98",
+    "internationalPhoneNumber": "+44 20 8012 8355",
+    "formattedAddress": "11-13 Chiswick High Rd., Chiswick, London W4 2ND, UK",
+    "location": {
+      "latitude": 51.4931434,
+      "longitude": -0.2458202
+    },
+    "rating": 5,
+    "websiteUri": "http://www.bjjwestlondon.com/",
+    "userRatingCount": 73,
+    "displayName": {
+      "text": "Wave Brazilian Jiu Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJq82zdwAFdkgRPA_ExYoLYhk",
+    "internationalPhoneNumber": "+44 20 8129 0847",
+    "formattedAddress": "Polygon House, 18-20 Bromell's Rd, London SW4 0BG, UK",
+    "location": {
+      "latitude": 51.4624772,
+      "longitude": -0.1392023
+    },
+    "rating": 5,
+    "websiteUri": "https://www.armabjj.com/?utm_source=google&utm_medium=organic&utm_campaign=gbp",
+    "userRatingCount": 132,
+    "displayName": {
+      "text": "ARMA Jiu Jitsu Club",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ5wsYAX4bdkgRkP8cbckzbiE",
+    "internationalPhoneNumber": "+44 7591 492052",
+    "formattedAddress": "10 William Rd, London NW1 3EN, UK",
+    "location": {
+      "latitude": 51.527358799999995,
+      "longitude": -0.13964859999999998
+    },
+    "rating": 5,
+    "websiteUri": "https://www.londonjiujitsucentre.com/",
+    "userRatingCount": 82,
+    "displayName": {
+      "text": "The London Jiu Jitsu Centre",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJZaLBGMcPdkgRf9Q8B0zN3eI",
+    "formattedAddress": "150 Barlby Rd, London W10 6BS, UK",
+    "location": {
+      "latitude": 51.5236567,
+      "longitude": -0.2172487
+    },
+    "rating": 5,
+    "websiteUri": "https://losbanditos.club/",
+    "userRatingCount": 72,
+    "displayName": {
+      "text": "Los Banditos Submission Grappling Club",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJUe0M3vYFdkgRc45NKDDucT8",
+    "internationalPhoneNumber": "+44 20 8079 1044",
+    "formattedAddress": "Imperial Wharf, 10-12 The Blvd, Townmead Rd, London SW6 2UB, UK",
+    "location": {
+      "latitude": 51.4729792,
+      "longitude": -0.1818189
+    },
+    "rating": 4.9,
+    "websiteUri": "https://alliancejjlondon.com/",
+    "userRatingCount": 43,
+    "displayName": {
+      "text": "Alliance Jiu Jitsu London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ51QtM_4FdkgRdj-k2-bantI",
+    "internationalPhoneNumber": "+44 7599 087147",
+    "formattedAddress": "17-21 Risborough St, London SE1 0HG, UK",
+    "location": {
+      "latitude": 51.5030097,
+      "longitude": -0.10009219999999999
+    },
+    "rating": 5,
+    "websiteUri": "https://www.urbanflowlondon.com/",
+    "userRatingCount": 52,
+    "displayName": {
+      "text": "Urban Flow London (UFL) BJJ",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJa4R7B8McdkgRHMNddvxyzMY",
+    "internationalPhoneNumber": "+44 20 7729 3907",
+    "formattedAddress": "16-22 Pritchard's Rd, London E2 9AP, UK",
+    "location": {
+      "latitude": 51.532775699999995,
+      "longitude": -0.0612483
+    },
+    "rating": 4.9,
+    "websiteUri": "http://fightzonelondon.co.uk/",
+    "userRatingCount": 630,
+    "displayName": {
+      "text": "Fightzone London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJb7sBxl8PdkgR9zdlawigCs8",
+    "internationalPhoneNumber": "+44 7872 354022",
+    "formattedAddress": "347 North End Rd, London SW6 1NN, UK",
+    "location": {
+      "latitude": 51.484660999999996,
+      "longitude": -0.20176329999999998
+    },
+    "rating": 4.9,
+    "websiteUri": "http://www.consistencybjj.com/",
+    "userRatingCount": 78,
+    "displayName": {
+      "text": "Consistency Brazilian Jiu Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJX0uzneQRdkgRjISKDn8VCBg",
+    "internationalPhoneNumber": "+44 7521 420733",
+    "formattedAddress": "The Rehearsal Rooms, Victoria Rd, North Acton, London W3 6HU, UK",
+    "location": {
+      "latitude": 51.523465099999996,
+      "longitude": -0.26139029999999996
+    },
+    "rating": 5,
+    "websiteUri": "http://www.purejiujitsu.com/",
+    "userRatingCount": 148,
+    "displayName": {
+      "text": "PURE JIUJITSU",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ01Cl4kAFdkgRHC9Bqk8YBbM",
+    "internationalPhoneNumber": "+44 7883 302026",
+    "formattedAddress": "4 Fulham High St, London SW6 3LQ, UK",
+    "location": {
+      "latitude": 51.471562999999996,
+      "longitude": -0.21136200000000002
+    },
+    "rating": 4.9,
+    "websiteUri": "https://valourjiujitsu.co.uk/?utm_source=google&utm_medium=organic&utm_campaign=gbp",
+    "userRatingCount": 256,
+    "displayName": {
+      "text": "Valour Jiu-Jitsu HQ",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJYT7F9qYcdkgRnBZ9VosFAdA",
+    "internationalPhoneNumber": "+44 7944 574046",
+    "formattedAddress": "19 Ebenezer St, London N1 7LU, UK",
+    "location": {
+      "latitude": 51.5284974,
+      "longitude": -0.0899933
+    },
+    "rating": 4.6,
+    "websiteUri": "http://www.londonfightfactory.com/",
+    "userRatingCount": 567,
+    "displayName": {
+      "text": "London Fight Factory",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ51rwLum_j6MRRkozs4qrU1g",
+    "internationalPhoneNumber": "+44 7984 954331",
+    "formattedAddress": "2 Austin Rd, London SW11 5JP, UK",
+    "location": {
+      "latitude": 51.473333499999995,
+      "longitude": -0.15507859999999998
+    },
+    "rating": 5,
+    "websiteUri": "https://tribebjj.co.uk/",
+    "userRatingCount": 23,
+    "displayName": {
+      "text": "Tribe BJJ",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ-1NGcDIFdkgR_SCRobUt9x4",
+    "internationalPhoneNumber": "+44 7838 669394",
+    "formattedAddress": "Sheepcote Lane, Battersea, 2nd floor, Nuffield Health, London SW11 5BW, UK",
+    "location": {
+      "latitude": 51.4706544,
+      "longitude": -0.1632267
+    },
+    "rating": 5,
+    "websiteUri": "https://vulkx.com/",
+    "userRatingCount": 14,
+    "displayName": {
+      "text": "VULKX Jiu-Jitsu Club Battersea",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJOXad-u0NdkgR996snp6hA8U",
+    "internationalPhoneNumber": "+44 7775 343032",
+    "formattedAddress": "Unit 8, Tesla Court, Warple Way, London W3 7AT, UK",
+    "location": {
+      "latitude": 51.50349,
+      "longitude": -0.2533023
+    },
+    "rating": 4.9,
+    "websiteUri": "http://grangejiujitsu.com/",
+    "userRatingCount": 62,
+    "displayName": {
+      "text": "Grange Jiu Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJY54iVc4FdkgRumU2T3paXpI",
+    "internationalPhoneNumber": "+44 7360 542667",
+    "formattedAddress": "11B Wardour Mews, London W1F 8AN, UK",
+    "location": {
+      "latitude": 51.5142525,
+      "longitude": -0.13510429999999998
+    },
+    "rating": 5,
+    "websiteUri": "http://www.balancebjj.co.uk/",
+    "userRatingCount": 44,
+    "displayName": {
+      "text": "BALANCE BRAZILIAN JIU JITSU ACADEMY",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJs7ainacEdkgRm_OlQ3TZajQ",
+    "internationalPhoneNumber": "+44 7564 434982",
+    "formattedAddress": "Unit A, 16-18 Marshalsea Rd, London SE1 1HL, UK",
+    "location": {
+      "latitude": 51.501932,
+      "longitude": -0.094875
+    },
+    "rating": 4.7,
+    "websiteUri": "http://www.carpediembjj.co.uk/",
+    "userRatingCount": 84,
+    "displayName": {
+      "text": "Carpe Diem Brazilian Jiu-Jitsu London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJe1U9HU4bdkgRPAnFyRTMKVE",
+    "internationalPhoneNumber": "+44 1273 933132",
+    "formattedAddress": "Gymbox, 12A Leather Ln, London EC1N 7SS, UK",
+    "location": {
+      "latitude": 51.5189108,
+      "longitude": -0.10832829999999999
+    },
+    "rating": 5,
+    "websiteUri": "https://grandunionbjj.com/",
+    "userRatingCount": 43,
+    "displayName": {
+      "text": "Grand Union Jiu Jitsu at Gymbox",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJc-MayNwRdkgRm3-9abr1cdM",
+    "internationalPhoneNumber": "+44 7883 409750",
+    "formattedAddress": "The Stowe Centre, London W2 5ES, UK",
+    "location": {
+      "latitude": 51.5202345,
+      "longitude": -0.190238
+    },
+    "rating": 4.9,
+    "websiteUri": "https://socialbjjw2.co.uk/",
+    "userRatingCount": 46,
+    "displayName": {
+      "text": "Social BJJ W2",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJi_HpzkIPdkgRjGSiqtv8I1U",
+    "internationalPhoneNumber": "+44 20 7856 0161",
+    "formattedAddress": "59-61 Armoury Way, London SW18 1JZ, UK",
+    "location": {
+      "latitude": 51.457670699999994,
+      "longitude": -0.1974737
+    },
+    "rating": 4.9,
+    "websiteUri": "https://www.guildbjj.com/",
+    "userRatingCount": 57,
+    "displayName": {
+      "text": "Guild of Fighters",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJr6k8uncRdkgRr_220Olo0bE",
+    "internationalPhoneNumber": "+44 7841 764210",
+    "formattedAddress": "152 Willesden Ln, London NW6 7TH, UK",
+    "location": {
+      "latitude": 51.5414878,
+      "longitude": -0.2054918
+    },
+    "rating": 5,
+    "websiteUri": "https://bjjhouse.uk/",
+    "userRatingCount": 40,
+    "displayName": {
+      "text": "BJJ House Academy",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJOxhPtQoPdkgRmtHAbXcNfyA",
+    "formattedAddress": "4 Fulham High St, London SW6 3LQ, UK",
+    "location": {
+      "latitude": 51.4715224,
+      "longitude": -0.211313
+    },
+    "rating": 5,
+    "websiteUri": "https://gbfulham.co.uk/",
+    "userRatingCount": 4,
+    "displayName": {
+      "text": "Brazilian Jiu Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJudb6BW8bdkgRd1a5I-yNw1U",
+    "internationalPhoneNumber": "+44 7424 470322",
+    "formattedAddress": "272 Archway Rd, London N6 5AU, UK",
+    "location": {
+      "latitude": 51.5753006,
+      "longitude": -0.14245059999999998
+    },
+    "rating": 5,
+    "userRatingCount": 3,
+    "displayName": {
+      "text": "Brazilian jiu jitsu (BJJFAMILY)",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJW1WJgRIQdkgRtDH1Q2L_WIQ",
+    "internationalPhoneNumber": "+44 7725 058874",
+    "formattedAddress": "Christian Holt House, 45 Denmark Rd, London NW6 5BP, UK",
+    "location": {
+      "latitude": 51.5335458,
+      "longitude": -0.2000729
+    },
+    "rating": 5,
+    "websiteUri": "https://www.jissoacademy.com/",
+    "userRatingCount": 44,
+    "displayName": {
+      "text": "Jisso Academy - Roger Gracie Queens Park",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJyZK9zDwddkgR3xSfQd4cZ-c",
+    "internationalPhoneNumber": "+44 7365 331358",
+    "formattedAddress": "Unit 2, Jiu Jitsu centre, 10 William Rd, London NW1 3EN, UK",
+    "location": {
+      "latitude": 51.527439199999996,
+      "longitude": -0.1394645
+    },
+    "rating": 5,
+    "websiteUri": "https://rogergracieeuston.com/",
+    "userRatingCount": 86,
+    "displayName": {
+      "text": "Roger Gracie Euston",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJRQnW4_4FdkgRYXfIgNRLIpc",
+    "internationalPhoneNumber": "+44 7360 334349",
+    "formattedAddress": "* 11 Thurloe Place Aquilla, Health & Fitness at Rembrandt Hotel, South Kensington, London SW7 2RS, UK",
+    "location": {
+      "latitude": 51.496058299999994,
+      "longitude": -0.17054429999999998
+    },
+    "rating": 5,
+    "websiteUri": "https://www.thegentleartsschool.co.uk/",
+    "userRatingCount": 18,
+    "displayName": {
+      "text": "The Gentle Arts School",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJXSG9DzAFdkgRo97y-4eckjM",
+    "internationalPhoneNumber": "+44 7565 132401",
+    "formattedAddress": "6 Sancroft St, London SE11 5UD, UK",
+    "location": {
+      "latitude": 51.4892003,
+      "longitude": -0.1123999
+    },
+    "rating": 5,
+    "websiteUri": "https://bjj-art.com/",
+    "userRatingCount": 118,
+    "displayName": {
+      "text": "BJJ ART UK - Brazilian Jiu Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ74sIMRMZdkgRk4oDvasiwAI",
+    "internationalPhoneNumber": "+44 7492 778374",
+    "formattedAddress": "Winchmore Hill Rd, London N14 6AD, UK",
+    "location": {
+      "latitude": 51.633713099999994,
+      "longitude": -0.12415
+    },
+    "rating": 5,
+    "websiteUri": "http://northlondonbjj.com/",
+    "userRatingCount": 8,
+    "displayName": {
+      "text": "North London Jiu Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJIfCH5ikbdkgRveHr3L0KLx8",
+    "internationalPhoneNumber": "+44 7976 855259",
+    "formattedAddress": "Unit C, 2nd Floor, Cypress House, London N22 6UJ, UK",
+    "location": {
+      "latitude": 51.5945518,
+      "longitude": -0.11305430000000001
+    },
+    "rating": 5,
+    "websiteUri": "https://www.londonbjj.com/",
+    "userRatingCount": 64,
+    "displayName": {
+      "text": "Origin Brazilian Jiu Jitsu - Team N22",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJWeYeO4wbdkgR-P8A-O947lA",
+    "internationalPhoneNumber": "+44 7498 471113",
+    "formattedAddress": "Unit 5, Holmes Studios, 45 Holmes Rd, London NW5 3AN, UK",
+    "location": {
+      "latitude": 51.5494973,
+      "longitude": -0.1439105
+    },
+    "rating": 5,
+    "websiteUri": "http://lucianocristovam.com/",
+    "userRatingCount": 110,
+    "displayName": {
+      "text": "Luciano Cristovam BJJ Academy",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJlW7gQiAbdkgRLX4NKZFRQxY",
+    "internationalPhoneNumber": "+44 7385 811179",
+    "formattedAddress": "Ground floor 1, 3 & 5 Morris Pl, Clifton Terrace, Finsbury Park, London N4 3JG, UK",
+    "location": {
+      "latitude": 51.565934000000006,
+      "longitude": -0.1074895
+    },
+    "rating": 4.8,
+    "websiteUri": "https://www.apexbjj.co.uk/",
+    "userRatingCount": 66,
+    "displayName": {
+      "text": "Apex Jiu-Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJD394OIMRdkgREuxykWqMK9M",
+    "internationalPhoneNumber": "+44 20 3417 4640",
+    "formattedAddress": "Unit 2, Beckford Building, WEST HAMPSTEAD SQUARE, London NW6 2AQ, UK",
+    "location": {
+      "latitude": 51.5468457,
+      "longitude": -0.19255239999999998
+    },
+    "rating": 5,
+    "websiteUri": "https://www.themartialartsplace.com/dojos/west-hampstead-bjj-dojo",
+    "userRatingCount": 29,
+    "displayName": {
+      "text": "The BJJ Place - West Hampstead Dojo",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJlV4jbB4RdkgReEYWofqCffw",
+    "internationalPhoneNumber": "+44 7767 196539",
+    "formattedAddress": "24 Charteris Rd, London NW6 7ET, UK",
+    "location": {
+      "latitude": 51.538778799999996,
+      "longitude": -0.19872470000000003
+    },
+    "rating": 5,
+    "websiteUri": "https://www.grapplersdenwl.com/",
+    "userRatingCount": 25,
+    "displayName": {
+      "text": "Grapplers Den West London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ3_UpEp4HdkgRUKYaS4_y3No",
+    "internationalPhoneNumber": "+44 7759 143483",
+    "formattedAddress": "Grange Mills, Weir Rd, London SW12 0NE, UK",
+    "location": {
+      "latitude": 51.4451257,
+      "longitude": -0.1423794
+    },
+    "rating": 5,
+    "websiteUri": "https://grapplersden.com/",
+    "userRatingCount": 143,
+    "displayName": {
+      "text": "Grapplers Den Balham",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJLUO7LrwFdkgRVCVhanafX5w",
+    "internationalPhoneNumber": "+44 7496 636266",
+    "formattedAddress": "91 Westminster Bridge Rd, London SE1 7HW, UK",
+    "location": {
+      "latitude": 51.498874799999996,
+      "longitude": -0.11282810000000001
+    },
+    "rating": 4.9,
+    "websiteUri": "https://www.grapplezone.co.uk/",
+    "userRatingCount": 83,
+    "displayName": {
+      "text": "Grapple Zone Brazilian Jiu Jitsu, Waterloo",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJHzqwkhADdkgRORFUrUaxTUc",
+    "formattedAddress": "Railway Arch, 199 Bellenden Rd, London SE15 4QJ, UK",
+    "location": {
+      "latitude": 51.4693057,
+      "longitude": -0.0724187
+    },
+    "rating": 5,
+    "websiteUri": "https://rolljiujitsu.co.uk/",
+    "userRatingCount": 16,
+    "displayName": {
+      "text": "ROLL Jiu-Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJXc0EJ4oPdkgRnN1TfKqL-ak",
+    "internationalPhoneNumber": "+44 7716 222602",
+    "formattedAddress": "Unit D, Bowery Building, 27A Carlton Dr, London SW15 2BS, UK",
+    "location": {
+      "latitude": 51.4595194,
+      "longitude": -0.2123318
+    },
+    "rating": 5,
+    "websiteUri": "http://www.putneybjj.com/",
+    "userRatingCount": 71,
+    "displayName": {
+      "text": "Putney Jiu Jitsu - 5* BJJ Gym in South West London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJebLpWKoFdkgR9hGAdWFBItA",
+    "formattedAddress": "68 St Rule St, Nine Elms, London SW8 3ED, UK",
+    "location": {
+      "latitude": 51.470718999999995,
+      "longitude": -0.1430697
+    },
+    "rating": 5,
+    "websiteUri": "http://www.bjjsouthlondon.com/",
+    "userRatingCount": 91,
+    "displayName": {
+      "text": "Carlson Gracie Jiu Jitsu Gym Clapham",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJI3_jd18PdkgR_l9LxK0QRTw",
+    "formattedAddress": "357 Upper Richmond Rd W, London SW14 8QN, UK",
+    "location": {
+      "latitude": 51.4646869,
+      "longitude": -0.2659919
+    },
+    "rating": 5,
+    "websiteUri": "http://www.bjjsheen.com/",
+    "userRatingCount": 18,
+    "displayName": {
+      "text": "Carlson Gracie Jiu Jitsu Sheen",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJU2VRKmEPdkgRMxm3Jm8oEhE",
+    "internationalPhoneNumber": "+44 7904 022460",
+    "formattedAddress": "305 Garratt Ln, London SW18 4EQ, UK",
+    "location": {
+      "latitude": 51.4473074,
+      "longitude": -0.1891185
+    },
+    "rating": 4.9,
+    "websiteUri": "http://www.wandsworthbjj.com/",
+    "userRatingCount": 30,
+    "displayName": {
+      "text": "Wandsworth Brazilian Jiu Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJoWKua9QCdkgRGhDOkE-80XA",
+    "internationalPhoneNumber": "+44 7765 243012",
+    "formattedAddress": "1012 Dockside Rd, London E16 2QT, UK",
+    "location": {
+      "latitude": 51.507659399999994,
+      "longitude": 0.041636599999999996
+    },
+    "rating": 4.9,
+    "websiteUri": "http://www.dieselgym.co.uk/",
+    "userRatingCount": 239,
+    "displayName": {
+      "text": "Diesel Gym London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ19tg-B4DdkgR6ffVQ7iVAk0",
+    "internationalPhoneNumber": "+44 7883 706945",
+    "formattedAddress": "117 Chapman St, London E1 2PH, UK",
+    "location": {
+      "latitude": 51.511660899999995,
+      "longitude": -0.06014829999999999
+    },
+    "rating": 5,
+    "userRatingCount": 38,
+    "displayName": {
+      "text": "Ellis Rumble BJJ/Grappling PT",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJV_C0HmEddkgR88XQk1idhVw",
+    "internationalPhoneNumber": "+44 7821 114354",
+    "formattedAddress": "6 Clapton Square, Lower Clapton, London E5 8HP, UK",
+    "location": {
+      "latitude": 51.5505965,
+      "longitude": -0.0542659
+    },
+    "rating": 4.9,
+    "websiteUri": "https://www.bjjcarlsongracie.com/",
+    "userRatingCount": 97,
+    "displayName": {
+      "text": "Carlson Gracie Hackney",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJuwbH7tMddkgRbXloPvzr9w4",
+    "internationalPhoneNumber": "+44 7518 017660",
+    "formattedAddress": "1, Sutherland House, 43 Sutherland Rd, London E17 6BU, UK",
+    "location": {
+      "latitude": 51.590432,
+      "longitude": -0.037349
+    },
+    "rating": 4.9,
+    "websiteUri": "http://www.ekbjj.com/",
+    "userRatingCount": 78,
+    "displayName": {
+      "text": "EK BJJ - Eddie Kone Academy of Jiu-Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJq6qqqtUCdkgR9D0-XonNu8Q",
+    "internationalPhoneNumber": "+44 7984 973337",
+    "formattedAddress": "1012 Dockside Rd, London E16 2QT, UK",
+    "location": {
+      "latitude": 51.5078633,
+      "longitude": 0.0412323
+    },
+    "rating": 5,
+    "websiteUri": "http://www.10thplanetjjlondon.com/",
+    "userRatingCount": 46,
+    "displayName": {
+      "text": "10th Planet Jiu Jitsu London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJg1P18docdkgR9gx-6GuTaVY",
+    "internationalPhoneNumber": "+44 7747 351587",
+    "formattedAddress": "Eight Members Club, 1 Dysart St, London EC2A 2BX, UK",
+    "location": {
+      "latitude": 51.5214666,
+      "longitude": -0.0837605
+    },
+    "rating": 5,
+    "websiteUri": "http://www.ingloriousgrapplers.com/",
+    "userRatingCount": 43,
+    "displayName": {
+      "text": "Inglorious Grapplers",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJ4WM8ELAddkgRLFhxiS3nMhg",
+    "formattedAddress": "Unit 5, Transform House, 16 Wellington Rd, London E10 7QF, UK",
+    "location": {
+      "latitude": 51.5684057,
+      "longitude": -0.0358765
+    },
+    "rating": 4.9,
+    "websiteUri": "https://legiongrappling.com/",
+    "userRatingCount": 119,
+    "displayName": {
+      "text": "Legion Grappling Academy",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJg74Pg9-o2EcRpj9OswOnJQI",
+    "internationalPhoneNumber": "+44 7834 230066",
+    "formattedAddress": "Unit 1C, Woolwich Church St, London SE18 5NS, UK",
+    "location": {
+      "latitude": 51.4931525,
+      "longitude": 0.0481858
+    },
+    "rating": 5,
+    "websiteUri": "http://www.thekodokan.com/",
+    "userRatingCount": 78,
+    "displayName": {
+      "text": "Kodokan Academy of Brazilian Jiu Jitsu - BJJ School London",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJazxs3kQDdkgRJba1w1sbjKk",
+    "internationalPhoneNumber": "+44 7507 257124",
+    "formattedAddress": "Unit 165, Canon Workshop, London E14 4AS, UK",
+    "location": {
+      "latitude": 51.507612699999996,
+      "longitude": -0.0264391
+    },
+    "rating": 5,
+    "websiteUri": "https://www.canarywharfbjj.com/",
+    "userRatingCount": 121,
+    "displayName": {
+      "text": "Canary Wharf Brazilian Jiu Jitsu",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJNX1RcGYDdkgRURs6JMLq7kU",
+    "internationalPhoneNumber": "+44 20 3411 0477",
+    "formattedAddress": "88 Commercial Rd, London E1 1NU, UK",
+    "location": {
+      "latitude": 51.5147118,
+      "longitude": -0.0652702
+    },
+    "rating": 4.3,
+    "websiteUri": "https://mmaldn.co.uk/",
+    "userRatingCount": 129,
+    "displayName": {
+      "text": "MMA LDN",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJRbCIYOcCdkgRN8iAE7ZNTx4",
+    "formattedAddress": "Surrey Docks Fitness and Water Sports CentreRope St, Rope St, London SE16 7SX, UK",
+    "location": {
+      "latitude": 51.493795999999996,
+      "longitude": -0.039526
+    },
+    "rating": 5,
+    "websiteUri": "https://se16bjj.com/",
+    "userRatingCount": 15,
+    "displayName": {
+      "text": "Flavio - Jiu Jitsu Coach",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJNaWiWIsddkgRomL1sfkfM34",
+    "internationalPhoneNumber": "+44 20 7265 9693",
+    "formattedAddress": "186 Bancroft Rd, Bethnal Green, London E1 4ET, UK",
+    "location": {
+      "latitude": 51.5256659,
+      "longitude": -0.0489027
+    },
+    "rating": 4.8,
+    "websiteUri": "https://www.kocombatacademy.com/",
+    "userRatingCount": 283,
+    "displayName": {
+      "text": "KO Combat Academy",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJR_M9c-MDdkgRkBKG1_pBZcE",
+    "internationalPhoneNumber": "+44 300 011 1786",
+    "formattedAddress": "First Floor, 9 Hessel St, London E1 2LR, UK",
+    "location": {
+      "latitude": 51.514364099999995,
+      "longitude": -0.062253499999999996
+    },
+    "rating": 5,
+    "websiteUri": "http://www.thegrapplehub.com/",
+    "userRatingCount": 41,
+    "displayName": {
+      "text": "The Grapple Hub",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJVxztoVEddkgRrNc3bH6-UiA",
+    "internationalPhoneNumber": "+44 7963 354472",
+    "formattedAddress": "124 Chapman St, London E1 2PH, UK",
+    "location": {
+      "latitude": 51.5117051,
+      "longitude": -0.059149400000000005
+    },
+    "rating": 5,
+    "websiteUri": "https://tigerstylemma.com/",
+    "userRatingCount": 45,
+    "displayName": {
+      "text": "Tigerstyle MMA",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJtduX0q5ydkgRN9bD-6Hbbtc",
+    "internationalPhoneNumber": "+44 20 8998 9262",
+    "formattedAddress": "1A Haven Grn, London W5 2UU, UK",
+    "location": {
+      "latitude": 51.5147542,
+      "longitude": -0.30514749999999996
+    },
+    "rating": 4.8,
+    "websiteUri": "http://www.thegauntletfightacademy.com/",
+    "userRatingCount": 214,
+    "displayName": {
+      "text": "The Gauntlet Fight Academy",
+      "languageCode": "en"
+    }
+  },
+  {
+    "id": "ChIJe4zej5YNdkgRsGlKhXFt_lQ",
+    "internationalPhoneNumber": "+44 20 8823 2323",
+    "formattedAddress": "131 Little Ealing Ln, London W5 4EJ, UK",
+    "location": {
+      "latitude": 51.4968133,
+      "longitude": -0.3124437
+    },
+    "rating": 4.9,
+    "websiteUri": "http://www.londonfightacademy.com/",
+    "userRatingCount": 108,
+    "displayName": {
+      "text": "London Fight Academy",
+      "languageCode": "en"
+    }
+  }
+]
