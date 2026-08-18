@@ -49,7 +49,18 @@ DEFAULT_RADIUS_KM = 15
 
 
 @st.cache_data
-def load_gyms(path: Path = DATA_PATH) -> pd.DataFrame:
+def load_gyms(path: Path = DATA_PATH, file_mtime: float = 0) -> pd.DataFrame:
+    """Load gyms_clean.csv, cached until the file itself changes.
+
+    st.cache_data keys its cache on the function's code and argument
+    values, not on what a file on disk actually contains. Without
+    file_mtime, a redeploy that updates gyms_clean.csv but doesn't
+    touch this function's source would keep serving the previous
+    deploy's cached DataFrame forever — which is exactly what
+    happened on the first Europe redeploy. Passing the file's mtime
+    as a plain (hashed) argument means a changed file produces a
+    different cache key, busting the stale cache automatically.
+    """
     return pd.read_csv(path)
 
 
@@ -141,7 +152,7 @@ def main():
         "Germany, Spain, and Italy — one search away."
     )
 
-    gyms = load_gyms()
+    gyms = load_gyms(file_mtime=DATA_PATH.stat().st_mtime)
 
     location_query = st.text_input(
         "Your postcode, city, or address",
