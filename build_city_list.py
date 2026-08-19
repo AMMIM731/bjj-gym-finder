@@ -30,9 +30,10 @@ COUNTRIES = {
     "DE": "Germany",
     "ES": "Spain",
     "IT": "Italy",
+    "CA": "Canada",
 }
 
-MIN_POPULATION = 50_000
+MIN_POPULATION = 500_000
 
 # GeoNames' cities15000.txt is tab-separated with no header row.
 # Column order: https://download.geonames.org/export/dump/readme.txt

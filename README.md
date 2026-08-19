@@ -1,11 +1,13 @@
-# BJJ Gym Finder — Europe
+# BJJ Gym Finder — Europe & Canada
 
 A small, real-data app that finds Brazilian Jiu Jitsu gyms near a
-postcode, city, or address in the UK, France, Germany, Spain, or
-Italy. Started as a one-day portfolio piece covering just London, to
-demonstrate Python and data-handling skills for a data analysis
-role — not a finished product, a deliberately scoped-down proof of
-concept that was later expanded to five countries.
+postcode, city, or address in major cities across the UK, France,
+Germany, Spain, Italy, and Canada. Started as a one-day portfolio
+piece covering just London, to demonstrate Python and data-handling
+skills for a data analysis role — not a finished product, a
+deliberately scoped-down proof of concept that was later expanded to
+five countries, then to six (adding Canada) with a narrower,
+major-cities-only population threshold.
 
 ## Why it's scoped this way
 
@@ -19,10 +21,10 @@ every part of it.
 So it's cut down on three axes:
 
 - **One sport, a population-thresholded set of cities** — BJJ only,
-  and only cities of 50,000+ people across five countries (see
+  and only cities of 500,000+ people across six countries (see
   `build_city_list.py`), not literally every town. Enough real data
   to be interesting, without paying for and QA-ing thousands of
-  villages that almost certainly have zero BJJ gyms.
+  towns that almost certainly have zero BJJ gyms.
 - **Keyword matching, not NLP** — see [Design decisions](#design-decisions)
   below. This was actually cut further mid-build (see
   [Known limitations](#known-limitations--what-i-cut)).
@@ -40,11 +42,15 @@ build_city_list.py --> cities.csv --> fetch_gyms.py --> gyms_raw.json --> proces
 
 0. **`build_city_list.py`** — Downloads GeoNames' free "cities15000"
    dataset (every city worldwide with population > 15,000) and
-   filters it to the UK, France, Germany, Spain, and Italy, at a
-   50,000+ population threshold. This is what defines the search
-   scope — swap the country codes or threshold at the top of the
-   script to cover a different set of countries or city sizes.
-   Output: `cities.csv` (~988 cities at the current settings).
+   filters it to the UK, France, Germany, Spain, Italy, and Canada,
+   at a 500,000+ population threshold. This is what defines the
+   search scope — swap the country codes or threshold at the top of
+   the script to cover a different set of countries or city sizes.
+   Output: `cities.csv` (50 cities at the current settings — this
+   started at 50,000+ across five countries (~988 cities), then
+   narrowed to major cities only when Canada was added, to keep the
+   dataset focused rather than growing indefinitely with every
+   expansion).
 
 1. **`fetch_gyms.py`** — Two-step fetch against Places API (New), run
    once per city in `cities.csv`:
@@ -68,11 +74,23 @@ build_city_list.py --> cities.csv --> fetch_gyms.py --> gyms_raw.json --> proces
    - Output: `gyms_raw.json`, the raw API responses, one object per
      gym, tagged with the city/country that found it.
 
-2. **`process_data.py`** — Loads the raw JSON, flattens it into a
-   table with pandas, and computes a `highly_rated` flag (rating and
-   review-count threshold — see below). Drops any gym missing
-   lat/lng (can't be placed on a map or have a distance computed).
-   Output: `gyms_clean.csv`.
+2. **`process_data.py`** — Loads the raw JSON, filters it down to
+   only gyms whose source city is in the *current* `cities.csv`
+   (see below), flattens what's left into a table with pandas, and
+   computes a `highly_rated` flag (rating and review-count
+   threshold — see below). Drops any gym missing lat/lng (can't be
+   placed on a map or have a distance computed). Output:
+   `gyms_clean.csv`.
+
+   `gyms_raw.json` is a growing historical archive — every gym ever
+   fetched, across every population threshold and country list this
+   project has used, including towns below the current 500,000+ bar
+   from before Canada was added. It's never pruned. This script is
+   what keeps the *served* data in sync with the *current* scope
+   without needing to re-fetch anything if the scope changes again:
+   raising the threshold is a `build_city_list.py` + `process_data.py`
+   rerun (free, no API calls); only genuinely new cities need
+   `fetch_gyms.py`.
 
 3. **`app.py`** — Streamlit app. Takes a postcode, city, or address,
    geocodes it via the free [Nominatim](https://nominatim.openstreetmap.org)
@@ -80,8 +98,9 @@ build_city_list.py --> cities.csv --> fetch_gyms.py --> gyms_raw.json --> proces
    haversine formula, and displays results filtered by radius and
    sorted by distance or rating. Nominatim replaced the original
    [postcodes.io](https://postcodes.io) integration, which only
-   understands UK postcodes and couldn't geocode the other four
-   countries.
+   understands UK postcodes and couldn't geocode anywhere else —
+   Nominatim needed no further changes to reach Canada, since it was
+   already a global geocoder, not a Europe-specific one.
 
 ## Design decisions
 
@@ -118,13 +137,30 @@ the exact logic and reasoning in comments.
 
 **Population-thresholded city list over an exhaustive one.**
 Expanding past London raised an obvious question: search every town
-in five countries, or just the ones likely to have a BJJ gym at all?
-Literally "every city" would mean thousands of Places API calls for
-places that probably have zero results — BJJ gyms concentrate in
-urban areas. `build_city_list.py` filters GeoNames' city data to a
-50,000+ population threshold instead, which cuts the search space to
-~1,000 cities while still catching the overwhelming majority of
-gyms.
+in the target countries, or just the ones likely to have a BJJ gym
+at all? Literally "every city" would mean thousands of Places API
+calls for places that probably have zero results — BJJ gyms
+concentrate in urban areas. `build_city_list.py` filters GeoNames'
+city data to a population threshold instead, currently 500,000+
+across six countries (50 cities). It started lower (50,000+ across
+five countries, ~988 cities) and was narrowed when Canada was added,
+rather than just letting the scope keep growing — a data source
+that's a handful of countries' worth of major cities stays
+explainable in an interview; one that's crept up to thousands of
+towns across two continents doesn't.
+
+**An archive file the served data is filtered from, not overwritten.**
+When the threshold changed from 50,000+ to 500,000+, the obvious
+naive approach — re-run the whole pipeline against the new
+`cities.csv` — would've silently thrown away the already-paid-for
+50,000+ data and only kept what the new narrower city list touches.
+Instead, `fetch_gyms.py` only ever *adds* to `gyms_raw.json` (keyed
+by place ID, so nothing duplicates), and `process_data.py` filters
+that archive down to the current `cities.csv` scope on every run.
+Net effect: narrowing the threshold cost zero API calls (all the
+500,000+ cities were already-fetched subset of the 50,000+ list);
+only Canada's 12 new cities needed fetching. Loosening the threshold
+back down later would be free too.
 
 ## Known limitations — what I cut, and why
 
@@ -211,13 +247,17 @@ python process_data.py     # -> gyms_clean.csv
 streamlit run app.py
 ```
 
-**`fetch_gyms.py` at the current ~988-city scope makes a lot of
-billed Google Places calls** — roughly 1,000 Text Search requests
-plus one Place Details call per unique gym found (likely several
-thousand). Check your Google Cloud budget/quota alerts before
-running it fresh. It checkpoints after every city (`fetch_progress.json`),
-so it's safe to interrupt and resume — re-running the same command
-picks up where it left off instead of re-paying for finished cities.
+**`fetch_gyms.py` makes billed Google Places calls** — one Text
+Search per city in `cities.csv`, plus one Place Details call per
+unique gym found. At the current 50-city scope that's cheap; it was
+~1,000 Text Search requests plus several thousand Detail calls back
+when the list covered ~988 cities at the 50,000+ threshold. Check
+your Google Cloud budget/quota alerts before running it fresh with a
+lowered threshold. It checkpoints after every city
+(`fetch_progress.json`), so it's safe to interrupt and resume —
+re-running the same command picks up where it left off instead of
+re-paying for finished cities, and cities already covered by a past,
+broader run are skipped automatically.
 
 ## What I'd build next
 
@@ -233,9 +273,11 @@ If this became the full multi-sport version:
   `fetch_gyms.py`, not a rewrite.
 - **Smaller towns, or more countries** — lower the population
   threshold or add country codes in `build_city_list.py`. Worth
-  weighing against cost: dropping to a 20,000+ threshold roughly
-  doubles the city count (and the API bill) for a long tail of towns
-  unlikely to have a gym.
+  weighing against cost: dropping back to a 50,000+ threshold across
+  the current six countries would mean re-fetching a long tail of
+  towns unlikely to have a gym (though the ~988 cities already
+  covered at that threshold before Canada was added wouldn't need
+  re-fetching — see the archive-file note in Design decisions).
 - **A map view**, not just a list — the lat/lng data is already
   there.
 - **Caching geocoding results** and the gym dataset behind a proper

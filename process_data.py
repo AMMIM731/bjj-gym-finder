@@ -4,6 +4,18 @@ process_data.py
 Loads the raw gym data pulled by fetch_gyms.py and cleans it into a
 tidy table, saved as gyms_clean.csv, ready for the Streamlit app.
 
+gyms_raw.json is a historical archive of every gym ever fetched
+across every population threshold and country list this project has
+used (e.g. it still holds gyms from towns of 50,000+ from before the
+scope narrowed to 500,000+ plus Canada). Re-running fetch_gyms.py
+against a smaller cities.csv doesn't remove that old data — it just
+stops adding to it — so this script filters gyms_raw.json down to
+only the cities in the *current* cities.csv before building
+gyms_clean.csv. That keeps the app's data in sync with the current
+scope without needing to re-fetch anything if the scope changes
+again later (e.g. lowering the threshold back down just needs a
+cities.csv rebuild + rerun of this script, no new API calls).
+
 Originally this tagged gyms with keyword themes pulled from review
 text (e.g. "beginner_friendly"). That was cut: Google's Places API
 (New) returned an empty "reviews" field for every single gym, even
@@ -15,7 +27,9 @@ actually have: rating and review count.
 Run with: python process_data.py
 """
 
+import csv
 import json
+
 import pandas as pd
 
 # A gym needs BOTH a high rating and enough reviews to be flagged.
@@ -32,6 +46,12 @@ HIGHLY_RATED_MIN_REVIEWS = 20
 def load_raw_data(path: str = "gyms_raw.json") -> list[dict]:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_current_cities(path: str = "cities.csv") -> set[tuple[str, str]]:
+    """(city, country) pairs currently in scope, per cities.csv."""
+    with open(path, newline="", encoding="utf-8") as f:
+        return {(row["city"], row["country"]) for row in csv.DictReader(f)}
 
 
 def is_highly_rated(rating: float, review_count: int) -> bool:
@@ -63,7 +83,18 @@ def clean_gym(gym: dict) -> dict:
 
 def main():
     raw_gyms = load_raw_data()
-    rows = [clean_gym(gym) for gym in raw_gyms]
+    current_cities = load_current_cities()
+
+    in_scope = [
+        gym for gym in raw_gyms
+        if (gym.get("source_city", ""), gym.get("source_country", "")) in current_cities
+    ]
+    out_of_scope = len(raw_gyms) - len(in_scope)
+    if out_of_scope:
+        print(f"Excluding {out_of_scope} gym(s) from cities outside the current "
+              f"cities.csv scope (still preserved in gyms_raw.json)")
+
+    rows = [clean_gym(gym) for gym in in_scope]
     df = pd.DataFrame(rows)
 
     # Drop gyms with no usable location — can't place them on a map or

@@ -2,8 +2,8 @@
 app.py
 
 Streamlit app: enter a postcode, city, or address anywhere in the
-UK, France, Germany, Spain, or Italy, and find nearby BJJ gyms
-sorted by distance or rating.
+UK, France, Germany, Spain, Italy, or Canada, and find nearby BJJ
+gyms sorted by distance or rating.
 
 Originally the plan was a free-text box ("what are you looking
 for?") matched against keyword-tagged review themes. That's cut —
@@ -12,10 +12,11 @@ sorts on rating and review count instead, which is real data we
 actually have.
 
 Geocoding originally used postcodes.io, which only understands UK
-postcodes. Now that gyms span five countries, we use Nominatim
-(OpenStreetMap's free geocoder) instead — it has no API key, but its
-usage policy caps public server use at ~1 request/second and
-requires a descriptive User-Agent, both handled below.
+postcodes. Now that gyms span multiple countries and continents, we
+use Nominatim (OpenStreetMap's free geocoder) instead — it has no
+API key, but its usage policy caps public server use at ~1
+request/second and requires a descriptive User-Agent, both handled
+below.
 
 Run with: streamlit run app.py
 """
@@ -93,9 +94,10 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """Great-circle distance between two points in kilometres.
 
     Haversine treats the Earth as a sphere, not the more accurate
-    oblate spheroid. That error is centimetres at London's scale, so
-    it's not worth pulling in a geodesy library for this — the
-    trade-off only matters over much longer distances.
+    oblate spheroid. That error is centimetres at city scale — and
+    results are always radius-filtered to a single metro area (30km
+    max), never compared across the Atlantic — so it's not worth
+    pulling in a geodesy library for this.
     """
     earth_radius_km = 6371
     lat1, lon1, lat2, lon2 = map(math.radians, (lat1, lon1, lat2, lon2))
@@ -145,18 +147,18 @@ def render_gym(row: pd.Series) -> None:
 
 
 def main():
-    st.set_page_config(page_title="BJJ Gym Finder — Europe", page_icon="🥋")
-    st.title("🥋 BJJ Gym Finder — Europe")
+    st.set_page_config(page_title="BJJ Gym Finder — Europe & Canada", page_icon="🥋")
+    st.title("🥋 BJJ Gym Finder — Europe & Canada")
     st.caption(
-        "Real gym data from Google Places API (New), covering the UK, France, "
-        "Germany, Spain, and Italy — one search away."
+        "Real gym data from Google Places API (New), covering major cities in the "
+        "UK, France, Germany, Spain, Italy, and Canada — one search away."
     )
 
     gyms = load_gyms(file_mtime=DATA_PATH.stat().st_mtime)
 
     location_query = st.text_input(
         "Your postcode, city, or address",
-        placeholder="e.g. E1 6AN, Berlin, or Via Roma 1, Milan",
+        placeholder="e.g. E1 6AN, Berlin, or Toronto, Canada",
     )
 
     col1, col2 = st.columns(2)
