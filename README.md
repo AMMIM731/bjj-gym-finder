@@ -92,15 +92,34 @@ build_city_list.py --> cities.csv --> fetch_gyms.py --> gyms_raw.json --> proces
    rerun (free, no API calls); only genuinely new cities need
    `fetch_gyms.py`.
 
-3. **`app.py`** — Streamlit app. Takes a postcode, city, or address,
-   geocodes it via the free [Nominatim](https://nominatim.openstreetmap.org)
-   (OpenStreetMap) API, computes distance to every gym with the
-   haversine formula, and displays results filtered by radius and
-   sorted by distance or rating. Nominatim replaced the original
-   [postcodes.io](https://postcodes.io) integration, which only
-   understands UK postcodes and couldn't geocode anywhere else —
-   Nominatim needed no further changes to reach Canada, since it was
-   already a global geocoder, not a Europe-specific one.
+3. **`app.py`** — Streamlit app. The location box is a live-suggest
+   searchbox ([`streamlit-searchbox`](https://github.com/m-wrzr/streamlit-searchbox),
+   a custom component — Streamlit's built-in `text_input` has no
+   dropdown-as-you-type support) backed by Google Places Autocomplete
+   (New), scoped to the six countries in scope via
+   `includedRegionCodes`. Selecting a suggestion resolves its
+   coordinates with one Place Details call (field-masked to just
+   `location` — cheap). The dropdown always keeps a synthetic
+   "search for what I typed anyway" option at the bottom, resolved
+   via the free [Nominatim](https://nominatim.openstreetmap.org)
+   (OpenStreetMap) API instead — Autocomplete won't match every
+   input (an exact postcode with no nearby POI, a typo), and this
+   keeps that path available as one deliberate selection rather than
+   firing Nominatim on every keystroke, which would violate its
+   rate-limited free-server usage policy. Distance to every gym is
+   computed with the haversine formula; results are filtered by
+   radius and sorted by distance or rating.
+
+   This is the first time the *deployed* app calls a billed Google
+   API at runtime — until now it only ever served the pre-fetched
+   CSV, and `fetch_gyms.py`'s API key never needed to leave your
+   machine. Autocomplete-to-Details calls share one session token per
+   search (regenerated after each selection) so Google bills the
+   whole search-then-select sequence as one session rather than
+   per keystroke — see `get_google_api_key()` /
+   `st.session_state.places_session_token` in `app.py`. Nominatim
+   replaced the original [postcodes.io](https://postcodes.io)
+   integration, which only understood UK postcodes.
 
 ## Design decisions
 
@@ -263,6 +282,24 @@ Create a `.env` file with your Google Places API key:
 GOOGLE_PLACES_API_KEY=your_key_here
 ```
 
+`app.py` now reads this too (for live Autocomplete suggestions), not
+just `fetch_gyms.py` — `get_google_api_key()` checks Streamlit
+secrets first, then falls back to this `.env` var, so the same key
+works for both local development and `streamlit run app.py`.
+
+**Deploying to Streamlit Community Cloud:** `.env` is gitignored and
+never reaches the deployed app, so the key has to be added as a
+Cloud secret separately — app dashboard → Settings → Secrets, then:
+
+```toml
+GOOGLE_PLACES_API_KEY = "your_key_here"
+```
+
+Without this secret, Autocomplete suggestions silently don't appear
+(`get_google_api_key()` returns `None`, `autocomplete_search()`
+degrades to just the free-text fallback option) — the app doesn't
+crash, but the location box loses its main new feature.
+
 Then run the pipeline (or skip straight to the app — `gyms_clean.csv`
 is already checked in):
 
@@ -284,6 +321,16 @@ lowered threshold. It checkpoints after every city
 re-running the same command picks up where it left off instead of
 re-paying for finished cities, and cities already covered by a past,
 broader run are skipped automatically.
+
+**The deployed app itself now makes billed calls too, on every
+search** — this is new. Previously the live app only ever read the
+pre-fetched CSV, so it had zero ongoing Google API cost regardless of
+traffic. Now each search is one Autocomplete session (bundled to one
+billed unit via the shared session token, however many keystrokes it
+took) plus one Place Details call if a suggestion gets selected. For
+a low-traffic demo this is negligible; it's worth knowing about
+before pointing real traffic at this app, since cost now scales with
+usage instead of being a fixed one-time fetch.
 
 ## What I'd build next
 

@@ -12,21 +12,30 @@ sorts on rating and review count instead, which is real data we
 actually have.
 
 Geocoding originally used postcodes.io, which only understands UK
-postcodes. Now that gyms span multiple countries and continents, we
-use Nominatim (OpenStreetMap's free geocoder) instead — it has no
-API key, but its usage policy caps public server use at ~1
-request/second and requires a descriptive User-Agent, both handled
-below.
+postcodes, then moved to Nominatim (OpenStreetMap's free geocoder)
+for global coverage. The location box now uses Google Places
+Autocomplete (New) for live suggestions as you type — the same API
+already powering fetch_gyms.py — with Nominatim kept as a fallback
+for whatever's typed if the user doesn't pick a suggestion. This is
+the first time the *deployed* app needs the Google Places API key at
+runtime (previously it only served pre-fetched CSV data); see
+README.md for the Streamlit Cloud secrets setup this requires.
 
 Run with: streamlit run app.py
 """
 
 import math
+import os
+import uuid
 from pathlib import Path
 
 import pandas as pd
 import requests
 import streamlit as st
+from dotenv import load_dotenv
+from streamlit_searchbox import st_searchbox
+
+load_dotenv()
 
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 
@@ -34,6 +43,16 @@ NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 # identifying the application — anonymous/default requests get
 # blocked. See https://operations.osmfoundation.org/policies/nominatim/
 NOMINATIM_HEADERS = {"User-Agent": "bjj-gym-finder (Streamlit demo app)"}
+
+GOOGLE_AUTOCOMPLETE_URL = "https://places.googleapis.com/v1/places:autocomplete"
+GOOGLE_PLACE_DETAILS_URL = "https://places.googleapis.com/v1/places/{place_id}"
+
+# Scoping suggestions to where we actually have gym data avoids
+# wasting the dropdown on, say, a Tokyo address. Google's Autocomplete
+# (New) accepts more than the 5-country cap the legacy Autocomplete
+# API had — tested directly with all 6 of these at once, no error —
+# so nothing had to be dropped to fit a limit.
+AUTOCOMPLETE_REGION_CODES = ["gb", "fr", "de", "es", "it", "ca"]
 
 # Resolve gyms_clean.csv relative to this file, not the process's
 # working directory — Streamlit can be launched from a different cwd
@@ -63,6 +82,108 @@ def load_gyms(path: Path = DATA_PATH, file_mtime: float = 0) -> pd.DataFrame:
     different cache key, busting the stale cache automatically.
     """
     return pd.read_csv(path)
+
+
+def get_google_api_key() -> str | None:
+    """Read the Google Places API key from Streamlit secrets (deployed)
+    or a local .env file (dev), returning None if neither has it.
+
+    st.secrets raises if no secrets.toml/Cloud secret exists at all,
+    not just if this particular key is missing — broad except is
+    deliberate so any of those failure modes falls through to the env
+    var instead of crashing the app.
+    """
+    try:
+        return st.secrets["GOOGLE_PLACES_API_KEY"]
+    except Exception:
+        return os.environ.get("GOOGLE_PLACES_API_KEY")
+
+
+def autocomplete_search(searchterm: str) -> list[tuple[str, tuple[str, str, str]]]:
+    """Google Places Autocomplete (New) suggestions for the searchbox.
+
+    Returns (label, value) pairs, where value is (kind, payload,
+    display_text): kind is "place" (payload = place_id, resolved via
+    Place Details) or "freetext" (payload = the typed text, resolved
+    via Nominatim). display_text is the human-readable string later
+    used in status messages — st_searchbox only returns the selected
+    *value* back to the caller, not its label, so it has to travel
+    inside the value itself.
+
+    The list always ends with a synthetic "search for what I typed
+    anyway" option — Autocomplete won't match everything (an exact
+    postcode with no nearby POI, a typo, a place outside its data),
+    and this keeps that path available as one deliberate selection
+    rather than trying to fire the Nominatim fallback on every
+    keystroke, which would hammer Nominatim's rate-limited free
+    server while the user is still typing.
+    """
+    options: list[tuple[str, tuple[str, str, str]]] = []
+    searchterm = searchterm.strip()
+
+    if len(searchterm) >= 2:
+        api_key = get_google_api_key()
+        if api_key:
+            body = {
+                "input": searchterm,
+                "includedRegionCodes": AUTOCOMPLETE_REGION_CODES,
+                "sessionToken": st.session_state.places_session_token,
+            }
+            try:
+                response = requests.post(
+                    GOOGLE_AUTOCOMPLETE_URL,
+                    headers={
+                        "Content-Type": "application/json",
+                        "X-Goog-Api-Key": api_key,
+                    },
+                    json=body,
+                    timeout=5,
+                )
+                if response.status_code == 200:
+                    for suggestion in response.json().get("suggestions", []):
+                        prediction = suggestion.get("placePrediction")
+                        if not prediction:
+                            continue
+                        label = prediction.get("text", {}).get("text", "")
+                        place_id = prediction.get("placeId", "")
+                        if label and place_id:
+                            options.append((label, ("place", place_id, label)))
+            except requests.RequestException:
+                pass  # Autocomplete is a convenience — degrade to free-text only.
+
+    if searchterm:
+        options.append((
+            f'Search for "{searchterm}"',
+            ("freetext", searchterm, searchterm),
+        ))
+
+    return options
+
+
+def place_details_location(place_id: str) -> tuple[float, float] | None:
+    """Coordinates for a place chosen from the Autocomplete dropdown."""
+    api_key = get_google_api_key()
+    if not api_key:
+        return None
+
+    try:
+        response = requests.get(
+            GOOGLE_PLACE_DETAILS_URL.format(place_id=place_id),
+            headers={"X-Goog-Api-Key": api_key, "X-Goog-FieldMask": "location"},
+            params={"sessionToken": st.session_state.places_session_token},
+            timeout=5,
+        )
+    except requests.RequestException:
+        return None
+
+    if response.status_code != 200:
+        return None
+
+    location = response.json().get("location")
+    if not location:
+        return None
+
+    return location["latitude"], location["longitude"]
 
 
 def geocode_location(query: str) -> tuple[float, float] | None:
@@ -156,9 +277,18 @@ def main():
 
     gyms = load_gyms(file_mtime=DATA_PATH.stat().st_mtime)
 
-    location_query = st.text_input(
-        "Your postcode, city, or address",
+    # One token per Autocomplete-to-Details "session" — Google bills
+    # a session as a single unit if the same token is passed through
+    # both calls, instead of billing each keystroke separately.
+    if "places_session_token" not in st.session_state:
+        st.session_state.places_session_token = str(uuid.uuid4())
+
+    selection = st_searchbox(
+        autocomplete_search,
+        label="Your postcode, city, or address",
         placeholder="e.g. E1 6AN, Berlin, or Toronto, Canada",
+        clear_on_submit=False,
+        key="location_searchbox",
     )
 
     col1, col2 = st.columns(2)
@@ -172,11 +302,19 @@ def main():
         f"(rating ≥ 4.7 with 20+ reviews)"
     )
 
-    if not location_query:
+    if not selection:
         st.info("Enter a postcode, city, or address to see BJJ gyms near you.")
         return
 
-    location = geocode_location(location_query)
+    kind, payload, location_query = selection
+    if kind == "place":
+        location = place_details_location(payload)
+        # A completed Autocomplete session (search keystrokes + this
+        # Details lookup) is done — start a fresh token for the next one.
+        st.session_state.places_session_token = str(uuid.uuid4())
+    else:
+        location = geocode_location(payload)
+
     if location is None or location[0] is None:
         st.error(
             f"Couldn't find \"{location_query}\". "
