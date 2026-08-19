@@ -225,6 +225,32 @@ covers the "run got interrupted" failure mode; it doesn't cover
 "Google is actively rate-limiting us" — that would need real backoff
 logic if it becomes a problem at this scale.
 
+**Cross-run place-ID dedup can silently orphan a city's data.**
+Found live, not in testing: after adding Canada, London returned
+zero results on the deployed app — its dedicated `London, United
+Kingdom` search in the original city-based fetch had found 20 real
+gyms, but all 20 were already in `seen_place_ids` from the original
+pre-expansion 58-gym batch (fetched before per-gym city tagging
+existed, so those entries carried no `source_city` at all). The
+dedup logic correctly avoided re-billing Place Details for gyms
+already fetched — that's its whole job — but the side effect was
+that those 58 gyms never got tagged as belonging to *any* city, so
+`process_data.py`'s scope filter dropped them entirely. A repeat
+`fetch_gyms.py` run couldn't fix this either: the same 20 place IDs
+would just get skipped again for the same reason. The actual fix was
+a one-time direct patch — retagging all 58 untagged `gyms_raw.json`
+entries as `London, United Kingdom` (verified by address, all
+genuinely London) — plus an audit script comparing every city in
+`cities.csv` against what's actually present in `gyms_raw.json`,
+which turned up 55 other cities from the original 988-city run with
+the same symptom (though most of those aren't in the current
+500,000+ city list, so they don't affect what's served today). The
+general lesson: a place-ID-keyed archive and a city-keyed scope
+filter can drift apart silently whenever a gym is reachable from more
+than one city's search — worth an occasional audit rather than
+assuming "the fetch completed without errors" means "every city's
+data is actually attributed to it."
+
 ## Running it locally
 
 ```bash
