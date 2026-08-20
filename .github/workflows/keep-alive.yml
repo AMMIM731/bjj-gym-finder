@@ -1,0 +1,25 @@
+name: Keep Streamlit app awake
+
+# Streamlit Community Cloud's free tier fully sleeps an app after a
+# period of no visitors, and waking a cold container back up is what
+# makes the first visit after a quiet spell slow. Pinging the app on
+# a schedule keeps it warm so real visitors don't hit that cold start.
+#
+# This isn't a speed fix for the app itself — it's a workaround for
+# the free tier's "sleep when idle" behavior, trading a small
+# always-on footprint for a consistently fast first load.
+
+on:
+  schedule:
+    # Every 10 minutes. More frequent than strictly necessary, since
+    # GitHub's own cron scheduler can run a few minutes late during
+    # high load, and this only costs a trivial HTTP request either way.
+    - cron: "*/10 * * * *"
+  workflow_dispatch: # lets this be triggered manually from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the app
+        run: curl -sS -L --max-time 30 -o /dev/null https://bjj-gym-finder-f2u5xoolnp5b9dwxybk73r.streamlit.app/
