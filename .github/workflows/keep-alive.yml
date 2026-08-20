@@ -21,5 +21,12 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
+      # Streamlit Cloud routes a fresh visit through a share.streamlit.io
+      # auth redirect that sets a session cookie, then bounces back to
+      # the app. curl only follows redirects with -L; it doesn't carry
+      # cookies between hops unless the cookie engine is on (-c), so a
+      # bare "curl -L" here loops forever between the auth step and the
+      # app step and fails with "Maximum redirects followed" — -c turns
+      # the cookie engine on so the session cookie survives the hop.
       - name: Ping the app
-        run: curl -sS -L --max-time 30 -o /dev/null https://bjj-gym-finder-f2u5xoolnp5b9dwxybk73r.streamlit.app/
+        run: curl -sS -L -c cookies.txt --max-time 30 -o /dev/null https://bjj-gym-finder-f2u5xoolnp5b9dwxybk73r.streamlit.app/
